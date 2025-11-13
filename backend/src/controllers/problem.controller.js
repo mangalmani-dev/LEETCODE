@@ -242,5 +242,34 @@ export const updateProblem =async (req,res)=>{
 }
 
 export const getAllProblemSolvedByUser =async (req,res)=>{
+ 
+    try {
+
+      const problem =await db.problem.findMany({
+        where:{
+           solvedBy :{
+            some:{
+              userId:req.user.id
+            }
+           }
+        },
+        include:{
+          solvedBy:{
+            where:{
+              userId:req.user.id
+            }
+          }
+        }
+      })
+      res.status(200).json({
+        message:"problem fetched successfully",
+        success:true,
+        problem
+      })
+       
+    } catch (error) {
+      console.error("Error in updating problem:", error);
+    return res.status(500).json({ message: "Error in fetched problems" });
+    }
 
 }
