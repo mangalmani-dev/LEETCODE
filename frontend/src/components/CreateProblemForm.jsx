@@ -1,8 +1,8 @@
 import React from 'react'
 
-import {useForm,useFieldArray,Controller} from "react-hook-form"
+import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import {z} from "zod"
+import { z } from "zod"
 import {
   Plus,
   Trash2,
@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import Editor from "@monaco-editor/react"
 import { useState } from 'react';
-import {axiosInstance} from "../lib/axios.js"
+import { axiosInstance } from "../lib/axios.js"
 import toast from "react-hot-toast"
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const problemSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -517,15 +517,15 @@ public class Main {
 
 const CreateProblemForm = () => {
 
-    const [sampleType, setSampleType]=useState("DP")
-    
-    const navigation =useNavigate()
-    const {control ,handleSubmit,reset,register,formState :{
-        errors
-    }}= useForm({
-        resolver:zodResolver(problemSchema),
-        defaultValues :{
-                       testcases: [{ input: "", output: "" }],
+  const [sampleType, setSampleType] = useState("DP")
+
+  const navigation = useNavigate()
+  const { control, handleSubmit, reset, register, formState: {
+    errors
+  } } = useForm({
+    resolver: zodResolver(problemSchema),
+    defaultValues: {
+      testcases: [{ input: "", output: "" }],
       tags: [""],
       examples: {
         JAVASCRIPT: { input: "", output: "", explanation: "" },
@@ -542,10 +542,10 @@ const CreateProblemForm = () => {
         PYTHON: "# Add your reference solution here",
         JAVA: "// Add your reference solution here",
       },
-            
-        }
-    })
-    
+
+    }
+  })
+
   const {
     fields: testCaseFields,
     append: appendTestCase,
@@ -566,26 +566,44 @@ const CreateProblemForm = () => {
     name: "tags",
   });
 
-  const [isLoading , setIsLoading] = useState(false);
-    
-  const onSubmit=async(value)=>{
-   console.log(value);
-   
-  }
-   const loadSampleData=()=>{
+  const [isLoading, setIsLoading] = useState(false);
+  const onSubmit = async (value) => {
+    try {
+      setIsLoading(true);
+
+      // Map field names to backend
+      const payload = {
+        ...value,
+        testCases: value.testcases,
+        referenceSolution: value.referenceSolutions,
+      };
+
+      const res = await axiosInstance.post("/problems/create-problem", payload);
+      console.log(res.data);
+      toast.success(res.data.message || "Problem Created successfully⚡");
+      navigation("/");
+    } catch (error) {
+      console.log(error.response?.data || error);
+      toast.error(error.response?.data?.error || "Error creating problem");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadSampleData = () => {
     const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
-  
-   replaceTags(sampleData.tags.map((tag) => tag));
+
+    replaceTags(sampleData.tags.map((tag) => tag));
     replacetestcases(sampleData.testcases.map((tc) => tc));
 
-   // Reset the form with sample data
+    // Reset the form with sample data
     reset(sampleData);
-}
+  }
 
 
   return (
     <div className='container mx-auto py-8 px-4 max-w-7xl' >
-         <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-6 md:p-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-4 border-b">
             <h2 className="card-title text-2xl md:text-3xl flex items-center gap-3">
@@ -597,18 +615,16 @@ const CreateProblemForm = () => {
               <div className="join">
                 <button
                   type="button"
-                  className={`btn join-item ${
-                    sampleType === "DP" ? "btn-active" : ""
-                  }`}
+                  className={`btn join-item ${sampleType === "DP" ? "btn-active" : ""
+                    }`}
                   onClick={() => setSampleType("array")}
                 >
                   DP Problem
                 </button>
                 <button
                   type="button"
-                  className={`btn join-item ${
-                    sampleType === "string" ? "btn-active" : ""
-                  }`}
+                  className={`btn join-item ${sampleType === "string" ? "btn-active" : ""
+                    }`}
                   onClick={() => setSampleType("string")}
                 >
                   String Problem
@@ -1045,7 +1061,7 @@ const CreateProblemForm = () => {
           </form>
         </div>
       </div>
-        </div>
+    </div>
   )
 }
 

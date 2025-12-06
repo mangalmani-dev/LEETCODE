@@ -80,29 +80,39 @@ return res.status(201).json(newProblem)
 
 }
 
-export const getAllProblems =async (req,res)=>{
-    try {
-         const problems=await db.problem.findMany()
-         if(!problems || problems.length ===0){
-            return res.status(404).json({
-                success:false,
-                error :"No problem found"
-            })
-         }
-         return res.status(200).json({
-            success :true,
-            message:"problem fetched succcessfully",
-            problems
-         })
+export const getAllProblems = async (req, res) => {
+  try {
+    const problems = await db.problem.findMany({
+      include: {
+        solvedBy: {
+          where: {
+            userId: req.user.id   // ✅ FIXED
+          }
+        }
+      }
+    });
 
-    } catch (error) {
-        console.error("unexpected error :",error)
-        return res.status(500).json({
-            error :"Error fetching problemss",
-        })
+    if (!problems || problems.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No problem found"
+      });
     }
 
-}
+    return res.status(200).json({
+      success: true,
+      message: "problems fetched successfully",
+      problems
+    });
+
+  } catch (error) {
+    console.error("unexpected error :", error);
+    return res.status(500).json({
+      error: "Error fetching problems",
+    });
+  }
+};
+
 
 export const getProblemById =async (req,res)=>{
 
