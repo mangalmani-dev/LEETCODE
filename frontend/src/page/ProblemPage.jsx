@@ -18,11 +18,24 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { useProblemStore } from "../store/useProblemStore.js";
 import { useExecutionStore } from "../store/useExcuationStore.js";
+import {useSubmissionStore} from "../store/useSubmissionStore.js"
 import { getLanguageId } from "../lib/lang.js";
+import Submission from "../components/Submission.jsx"
+import SubmissionsList from "../components/SubmissionList.jsx"
+
+
 import SubmissionResults from "../components/Submission.jsx";
 
 const ProblemPage = () => {
   const { id } = useParams();
+
+    const {
+    submission: submissions,
+    isLoading: isSubmissionsLoading,
+    getSubmissionForProblem,
+    getSubmissionCountForProblem,
+    submissionCount,
+  } = useSubmissionStore();
 
   const { getProblemById, problem, isProblemLoading } = useProblemStore();
   const { executeCode, submission, isExecuting } = useExecutionStore();
@@ -33,11 +46,12 @@ const ProblemPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
 
-  const submissionCount = 10;
+  // const submissionCount = 10;
 
   // Load problem on mount
   useEffect(() => {
-    getProblemById(id);
+    getProblemById(id)
+    getSubmissionCountForProblem(id);
   }, [id]);
 
   // Set initial code + testcases
@@ -53,6 +67,14 @@ const ProblemPage = () => {
       );
     }
   }, [problem, selectedLanguage]);
+
+   useEffect(() => {
+    if (activeTab === "submissions" && id) {
+      getSubmissionForProblem(id);
+    }
+  }, [activeTab, id]);
+
+  console.log("submission", submissions);
 
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
@@ -142,7 +164,10 @@ const ProblemPage = () => {
         );
 
       case "submissions":
-        return <div className="p-4 text-center text-base-content/70">No submissions</div>;
+        return  <SubmissionsList
+            submissions={submissions}
+            isLoading={isSubmissionsLoading}
+          />
 
       case "discussion":
         return (

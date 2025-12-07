@@ -5,7 +5,7 @@ export const createPlaylist = async (req, res) => {
     try {
         const { name, description } = req.body
         const userId = req.user.id
-        const playlsit = await db.playlsit.create({
+        const playlsit = await db.playlist.create({
             data: {
                 name,
                 description,
@@ -30,7 +30,7 @@ export const createPlaylist = async (req, res) => {
 export const getAllListDetails = async (req, res) => {
 
     try {
-        const playlists = await db.playlists.findMany({
+        const playlists = await db.playlist.findMany({
             where: {
                 userId: req.user.id
             },
@@ -96,36 +96,39 @@ export const getPlaylistDetails = async (req, res) => {
 }
 
 export const addProblemToPlaylist = async (req, res) => {
-    const { playlistId } = req.params
-    const { problemsId } = req.body
-    try {
-        if (!Array.isArray(problemsId) || problemsId.length === 0) {
-            return res.status(404).json({ error: "invalid problem or measing" })
-        }
-        // create probelem
+  const { playlistId } = req.params;
+  const { problemIds } = req.body;
 
-        const problemsInPlaylist = await db.problemsInPlaylist.createMany({
-            data: problemsId.map((problemsId) => {
-                playlistId,
-                    problemsId,
-                    problemsInPlaylist
-            })
-        })
-        res.status(201).json({
-            success: true,
-            message: "problem added successfully"
-        })
-
-
-    } catch (error) {
-        console.error("Error  in problem added:", error);
-        res.status(500).json({
-            success: false,
-            error: "Failed to to add a problem"
-        })
+  try {
+    if (!Array.isArray(problemIds) || problemIds.length === 0) {
+      return res.status(400).json({ error: "Invalid or missing problems" });
     }
 
-}
+    const problemsInPlaylist = await db.problemInPlaylist.createMany({
+      data: problemIds.map((problemId) => ({
+        playListId: playlistId,
+        problemId
+      })),
+      skipDuplicates: true,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Problems added successfully",
+      problemsInPlaylist
+    });
+
+  } catch (error) {
+    console.error("Error adding problems to playlist:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to add problems"
+    });
+  }
+};
+
+
+
 
 export const deletePlaylist = async (req, res) => {
 

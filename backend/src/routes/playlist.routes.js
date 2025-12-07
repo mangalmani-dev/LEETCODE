@@ -8,7 +8,7 @@ playlistRoutes.get("/",authMiddleware,getAllListDetails)
 
 playlistRoutes.get("/:playlistId",authMiddleware,getPlaylistDetails)
 
-playlistRoutes.post("/create-playlsit",authMiddleware,createPlaylist)
+playlistRoutes.post("/create-playlist",authMiddleware,createPlaylist)
 
 playlistRoutes.post("/:playlistId/add-problem",authMiddleware,addProblemToPlaylist)
 
