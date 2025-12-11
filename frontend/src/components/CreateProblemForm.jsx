@@ -64,8 +64,6 @@ const problemSchema = z.object({
   }),
 });
 
-
-
 const sampledpData = {
   title: "Climbing Stairs",
   category: "dp", // Dynamic Programming
@@ -612,24 +610,23 @@ const CreateProblemForm = () => {
             </h2>
 
             <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0">
-              <div className="join">
-                <button
-                  type="button"
-                  className={`btn join-item ${sampleType === "DP" ? "btn-active" : ""
-                    }`}
-                  onClick={() => setSampleType("array")}
-                >
-                  DP Problem
-                </button>
-                <button
-                  type="button"
-                  className={`btn join-item ${sampleType === "string" ? "btn-active" : ""
-                    }`}
-                  onClick={() => setSampleType("string")}
-                >
-                  String Problem
-                </button>
-              </div>
+           <div className="join">
+  <button
+    type="button"
+    className={`btn join-item ${sampleType === "DP" ? "btn-active" : ""}`}
+    onClick={() => setSampleType("DP")}
+  >
+    DP Problem
+  </button>
+
+  <button
+    type="button"
+    className={`btn join-item ${sampleType === "string" ? "btn-active" : ""}`}
+    onClick={() => setSampleType("string")}
+  >
+    String Problem
+  </button>
+</div>
               <button
                 type="button"
                 className="btn btn-secondary gap-2"

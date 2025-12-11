@@ -86,7 +86,7 @@ export const getAllProblems = async (req, res) => {
       include: {
         solvedBy: {
           where: {
-            userId: req.user.id   // ✅ FIXED
+            userId: req.user.id   
           }
         }
       }
@@ -112,7 +112,6 @@ export const getAllProblems = async (req, res) => {
     });
   }
 };
-
 
 export const getProblemById =async (req,res)=>{
 
