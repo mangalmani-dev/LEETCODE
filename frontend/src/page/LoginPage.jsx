@@ -1,81 +1,85 @@
-import React,  { useState }  from 'react'
-import {useForm} from "react-hook-form"
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import AuthImagePattern from "../components/AuthImagePattern.jsx"
-import { useAuthStore} from "../store/useAuthStore.js"
-
-import {data, Link} from "react-router-dom"
-import {z} from "zod"
-
-import {
-  Code,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import LandingNavbar from "../components/LandingNavbar";
 
 const LoginPage = () => {
-  const LoginSchema=z.object({
-  email:z.string().email("Enter a valid email"),
-  password :z.string().min(6, "Password must be atleast of 6 characters"),
-})
+  const navigate = useNavigate();
+  const { isLoggingIn, login } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
 
-const {
-  register,
-  handleSubmit,
-  formState :{errors},
-}=useForm({
-  resolver :zodResolver(LoginSchema)
-})
+  const LoginSchema = z.object({
+    email: z.string().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
 
-const { isLoggingIn,login}=useAuthStore()
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(LoginSchema),
+  });
 
-const onSubmit =async (data)=>{
-  try {
-    await login(data)
-  } catch (error) {
-     console.log("error in login",error);
-     
-  }
-  
-}
-const [showPassword, setShowPassword] = useState(false);
+  const onSubmit = async (data) => {
+    try {
+      await login(data);
+      navigate("/home"); // redirect after login
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
+  };
+
+
   return (
-    <div className='h-screen grid lg:grid-cols-2'>
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
+    <div className="min-h-screen bg-gray-100 relative">
+      <LandingNavbar />
+
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-yellow-100 overflow-hidden">
+        <svg className="absolute inset-0 w-full h-full opacity-10">
+          <defs>
+            <pattern
+              id="dots"
+              x="0"
+              y="0"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle cx="2" cy="2" r="1" fill="#fbbf24" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+      </div>
+
+      <div className="relative flex items-center justify-center py-20 px-4">
+        <div className="bg-white rounded-3xl shadow-xl p-10 w-full max-w-lg backdrop-blur-sm bg-white/90">
           <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Code className="w-6 h-6 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-base-content/60">login to your account</p>
-            </div>
+            <img src="/leetlab.svg" className="w-24 mx-auto mb-4" alt="logo" />
+            <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
+            <p className="text-gray-500 mt-1">
+              Sign in to continue your coding journey
+            </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          
             {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/40" />
-                </div>
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
                   {...register("email")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.email ? "input-error" : ""
-                  }`}
                   placeholder="you@example.com"
+                  className={`w-full border rounded-xl px-10 py-3 focus:ring-2 outline-none transition-all ${
+                    errors.email
+                      ? "border-red-500 focus:ring-red-300"
+                      : "border-gray-300 focus:ring-yellow-400"
+                  }`}
                 />
               </div>
               {errors.email && (
@@ -84,78 +88,74 @@ const [showPassword, setShowPassword] = useState(false);
             </div>
 
             {/* Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.password ? "input-error" : ""
-                  }`}
                   placeholder="••••••••"
+                  className={`w-full border rounded-xl px-10 py-3 focus:ring-2 outline-none transition-all ${
+                    errors.password
+                      ? "border-red-500 focus:ring-red-300"
+                      : "border-gray-300 focus:ring-yellow-400"
+                  }`}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
+              </div>
+              <div className="text-right mt-1">
+                <Link className="text-yellow-500 text-sm hover:underline">
+                  Forgot Password?
+                </Link>
               </div>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
               )}
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full"
-               disabled={isLoggingIn}
-        
+              disabled={isLoggingIn}
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl flex justify-center items-center gap-2 shadow-md transition-transform hover:-translate-y-1"
             >
-              {isLoggingIn ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Login"
-              )}
+              {isLoggingIn ? <Loader2 className="h-5 w-5 animate-spin" /> : "Log In"}
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-base-content/60">
-               Don't have an account?{" "}
-              <Link to="/signup" className="link link-primary">
-                Sign up
-              </Link>
-            </p>
+          {/* Social Login */}
+          <div className="flex flex-col gap-4 mt-6">
+            <button
+              type="button"
+              onClick={()=>{}}
+              className="border rounded-xl py-3 w-full flex justify-center gap-2 hover:bg-gray-50 shadow-sm transition-transform hover:-translate-y-1"
+            >
+              <img src="/google.jpg" className="w-5" alt="Google" /> Continue with Google
+            </button>
+
+            <button className="border rounded-xl py-3 w-full flex justify-center gap-2 hover:bg-gray-50 shadow-sm transition-transform hover:-translate-y-1">
+              <img src="/github.png" className="w-5" alt="GitHub" /> Continue with GitHub
+            </button>
           </div>
+
+          <p className="text-center text-gray-600 mt-6">
+            Don’t have an account?{" "}
+            <Link className="text-yellow-500 font-medium" to="/signup">
+              Sign Up
+            </Link>
+          </p>
         </div>
       </div>
-
-       <AuthImagePattern
-        title={"Welcome Back platform!"}
-        subtitle={
-          "Login up to access our platform and start using our services."
-        }
-      />
-
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

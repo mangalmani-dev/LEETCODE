@@ -53,28 +53,78 @@ export const getProfile = async (req, res) => {
         time: true,
         memory: true,
         createdAt: true,
-            problemId: true, 
+        problemId: true,
         problem: { select: { title: true, difficulty: true } },
       },
     });
 
     // 5️⃣ Playlists
     const playlists = await db.playlist.findMany({
-  where: { userId },
-  include: {
-    problems: {
-      select: {
-        problem: {
+      where: { userId },
+      include: {
+        problems: {
           select: {
-            id: true,
-            title: true,
-            difficulty: true,
+            problem: {
+              select: {
+                id: true,
+                title: true,
+                difficulty: true,
+              },
+            },
           },
         },
       },
-    },
-  },
-});
+    });
+
+    // 6️⃣ Calculate Success Rate
+    const successRate =
+      totalSubmissions > 0 ? Math.round((totalSolved / totalSubmissions) * 100) + "%" : "0%";
+
+    // 7️⃣ Calculate Strike (consecutive days with submissions)
+    const allSubmissions = await db.submission.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    });
+
+    let strike = 0;
+    if (allSubmissions.length > 0) {
+      const today = new Date();
+      let count = 0;
+
+      for (let i = 0; i < allSubmissions.length; i++) {
+        const submissionDate = new Date(allSubmissions[i].createdAt);
+        const diffDays = Math.floor(
+          (today - submissionDate) / (1000 * 60 * 60 * 24)
+        );
+
+        if (diffDays === count) {
+          count++;
+        } else {
+          break;
+        }
+      }
+
+      strike = count;
+    }
+    const strikeText = `${strike} day${strike > 1 ? "s" : ""}`;
+
+    // 8️⃣ Calculate Rank (by totalSolved)
+    const allUsers = await db.user.findMany({
+      include: {
+        problemSolved: true,
+      },
+    });
+
+    const sortedUsers = allUsers
+      .map((u) => ({
+        id: u.id,
+        totalSolved: u.problemSolved.length,
+      }))
+      .sort((a, b) => b.totalSolved - a.totalSolved);
+
+    const rankIndex = sortedUsers.findIndex((u) => u.id === userId);
+    const rank = rankIndex >= 0 ? `#${rankIndex + 1}` : "-";
 
     // ✅ Send response
     return res.json({
@@ -84,6 +134,9 @@ export const getProfile = async (req, res) => {
         totalSolved,
         totalSubmissions,
         totalPlaylists,
+        strike: strikeText,
+        successRate,
+        rank,
       },
       difficultyCount,
       recentSubmissions,

@@ -579,7 +579,7 @@ const CreateProblemForm = () => {
       const res = await axiosInstance.post("/problems/create-problem", payload);
       console.log(res.data);
       toast.success(res.data.message || "Problem Created successfully⚡");
-      navigation("/");
+      navigation("/home");
     } catch (error) {
       console.log(error.response?.data || error);
       toast.error(error.response?.data?.error || "Error creating problem");

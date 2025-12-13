@@ -34,49 +34,61 @@ const Navbar = () => {
               </div>
            
             </label>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 space-y-3"
-            >
-              {/* Admin Option */}
-             
+       <ul
+  tabIndex={0}
+  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 space-y-3"
+>
+  {/* User Info */}
+  <li>
+    <p className="text-base font-semibold">
+      {authUser?.name}
+    </p>
+    <hr className="border-gray-200/10" />
+  </li>
 
-              {/* Common Options */}
-              <li>
-                <p className="text-base font-semibold">
-                 
-                  {authUser?.name}
+  {/* My Profile */}
+  <li>
+    <Link
+      to="/profile"
+      className="hover:bg-primary hover:text-white text-base font-semibold"
+    >
+      <User className="w-4 h-4 mr-2" />
+      My Profile
+    </Link>
+  </li>
 
-                </p>
-                <hr className="border-gray-200/10" />
-              </li>
-              <li>
-                <Link
-                  to="/profile"
-                  className="hover:bg-primary hover:text-white text-base font-semibold"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  My Profile
-                </Link>
-              </li>
-              {authUser?.role === "ADMIN" && (
-                <li>
-                  <Link
-                    to="/add-problem"
-                    className="hover:bg-primary hover:text-white text-base font-semibold"
-                  >
-                    <Code className="w-4 h-4 mr-1" />
-                    Add Problem
-                  </Link>
-                </li>
-              )}
-              <li>
-                <LogoutButton className="hover:bg-primary hover:text-white">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </LogoutButton>
-              </li>
-            </ul>
+  {/* Pricing Option */}
+  <li>
+    <Link
+      to="/pricing"
+      className="hover:bg-primary hover:text-white text-base font-semibold"
+    >
+      💰 Pricing
+    </Link>
+  </li>
+
+  {/* Admin Only Option: Add Problem */}
+  {authUser?.role === "ADMIN" && (
+    <li>
+      <Link
+        to="/add-problem"
+        className="hover:bg-primary hover:text-white text-base font-semibold"
+      >
+        <Code className="w-4 h-4 mr-1" />
+        Add Problem
+      </Link>
+    </li>
+  )}
+
+  {/* Logout */}
+  <li>
+    <LogoutButton className="hover:bg-primary hover:text-white">
+      <LogOut className="w-4 h-4 mr-2" />
+      Logout
+    </LogoutButton>
+  </li>
+</ul>
+
           </div>
         </div>
       </div>

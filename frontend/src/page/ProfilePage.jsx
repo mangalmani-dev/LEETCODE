@@ -9,8 +9,6 @@ import PlaylistProblems from "../components/PlaylistProblem.jsx";
 export default function ProfilePage() {
   const { profile, loading, fetchProfile } = useProfileStore();
 
-  console.log(profile)
-
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -18,21 +16,21 @@ export default function ProfilePage() {
   if (loading || !profile)
     return <p className="text-center mt-20">Loading profile...</p>;
 
-  const { user, stats } = profile; // make sure your backend returns stats
+  const { user, stats } = profile;
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      {/* Profile Header */}
-      <ProfileNavbar user={user} />
+    <div className="relative min-h-screen">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-yellow-100 overflow-hidden"></div>
 
-      {/* Stats Cards */}
-      <ProfileCards stats={stats} />
-
-      <ProfileStatsChart/>
-
-       <RecentSubmissions />
-
+      {/* Foreground Content */}
+      <div className="relative max-w-5xl mx-auto p-6">
+        <ProfileNavbar user={user} />
+        <ProfileCards stats={stats} />
+        <ProfileStatsChart />
+        <RecentSubmissions />
         <PlaylistProblems playlists={profile.playlists} />
+      </div>
     </div>
   );
 }

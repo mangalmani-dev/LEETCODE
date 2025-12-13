@@ -45,7 +45,9 @@ const ProblemPage = () => {
   // States
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+const [selectedLanguage, setSelectedLanguage] = useState(
+  "JAVASCRIPT"
+);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const [timeSpent, setTimeSpent] = useState(0);
@@ -299,24 +301,33 @@ const ProblemPage = () => {
 
           {/* LANGUAGE SELECT */}
           <div className="relative">
-            <select
-              className="select select-bordered select-primary w-44 pr-10"
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-              style={{
-                backgroundImage: `url(${languageLogos[selectedLanguage.toLowerCase()]})`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "8px center",
-                backgroundSize: "22px",
-                paddingLeft: "40px",
-              }}
-            >
-              {Object.keys(problem.codeSnippets || {}).map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                </option>
-              ))}
-            </select>
+
+
+<select
+  className="select select-bordered select-primary w-44 pr-10"
+  value={selectedLanguage.toUpperCase()} // match the keys in codeSnippets
+  onChange={(e) => {
+    const lang = e.target.value;
+    setSelectedLanguage(lang); // store exact key
+    setCode(problem.codeSnippets[lang] || "");
+  }}
+  style={{
+    backgroundImage: `url(${languageLogos[selectedLanguage.toLowerCase()]})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "8px center",
+    backgroundSize: "22px",
+    paddingLeft: "40px",
+  }}
+>
+  {Object.keys(problem.codeSnippets || {}).map((lang) => (
+    <option key={lang} value={lang}>
+      {lang.charAt(0).toUpperCase() + lang.slice(1).toLowerCase()}
+    </option>
+  ))}
+</select>
+
+
+           
           </div>
         </div>
       </nav>

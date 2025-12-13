@@ -1,189 +1,148 @@
-import React,  { useState }  from 'react'
-import {useForm} from "react-hook-form"
+
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import AuthImagePattern from "../components/AuthImagePattern.jsx"
-import { useAuthStore } from '../store/useAuthStore.js';
-
-import {data, Link} from "react-router-dom"
-import {z} from "zod"
-
-import {
-  Code,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import LandingNavbar from "../components/LandingNavbar";
 
 const SignupPage = () => {
-  const signUpSchema=z.object({
-  email:z.string().email("Enter a valid email"),
-  password :z.string().min(6, "Password must be atleast of 6 characters"),
-  name :z.string().min(3, "Name must be atleast of 3 characters")
-})
-  
-const {signUp,  isSigninUp}=useAuthStore()
-const [showPassword, setShowPassword] = useState(false);
+  const signUpSchema = z.object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    email: z.string().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
 
-const {
-  register,
-  handleSubmit,
-  formState :{errors},
-}=useForm({
-  resolver :zodResolver(signUpSchema)
-})
+  const { signUp, isSigninUp } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
 
-const onSubmit =async (data)=>{
- try {
-   await signUp(data)
-   console.log("signup data",data);
-   
- } catch (error) {
-   console.log("signup falied",error);
-   
- }
-  
-}
-  
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      await signUp(data);
+      console.log("Signup data", data);
+    } catch (error) {
+      console.log("Signup failed", error);
+    }
+  };
 
   return (
-    <div className='h-screen grid lg:grid-cols-2'>
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
+    <div className="min-h-screen bg-gray-100 relative">
+      {/* Navbar */}
+      <LandingNavbar />
+
+      {/* Background texture */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-yellow-100 overflow-hidden">
+        <svg className="absolute inset-0 w-full h-full opacity-10" width="100%" height="100%">
+          <defs>
+            <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1" fill="#fbbf24" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+      </div>
+
+      {/* Centered Signup Form */}
+      <div className="relative flex items-center justify-center py-20 px-4">
+        <div className="bg-white rounded-3xl shadow-xl p-10 w-full max-w-lg backdrop-blur-sm bg-white/90">
           <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Code className="w-6 h-6 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome </h1>
-              <p className="text-base-content/60">Sign Up to your account</p>
-            </div>
+            <img src="/leetlab.svg" className="w-24 mx-auto mb-4" alt="logo" />
+            <h1 className="text-3xl font-bold text-gray-800">Create Your Account</h1>
+            <p className="text-gray-500 mt-1">Sign up to start your coding journey</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
-            {/* name */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Name</span>
-              </label>
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Code className="h-5 w-5 text-base-content/40" />
-                </div>
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   {...register("name")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.name ? "input-error" : ""
-                  }`}
                   placeholder="Mangalmani Tiwari"
+                  className={`w-full border rounded-xl px-10 py-3 focus:ring-2 outline-none transition-all ${
+                    errors.name ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-yellow-400"
+                  }`}
                 />
               </div>
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-              )}              
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
             </div>
 
             {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/40" />
-                </div>
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
                   {...register("email")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.email ? "input-error" : ""
-                  }`}
                   placeholder="you@example.com"
+                  className={`w-full border rounded-xl px-10 py-3 focus:ring-2 outline-none transition-all ${
+                    errors.email ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-yellow-400"
+                  }`}
                 />
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.password ? "input-error" : ""
-                  }`}
                   placeholder="••••••••"
+                  className={`w-full border rounded-xl px-10 py-3 focus:ring-2 outline-none transition-all ${
+                    errors.password ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-yellow-400"
+                  }`}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-              )}
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
             </div>
 
-            {/* Submit Button */}
+            {/* Signup Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full"
-              disabled ={isSigninUp}
-        
+              disabled={isSigninUp}
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl flex justify-center items-center gap-2 shadow-md transition-transform hover:-translate-y-1"
             >
-             {isSigninUp ? (
+              {isSigninUp ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
+                  <Loader2 className="h-5 w-5 animate-spin" /> Signing Up...
                 </>
               ) : (
-                "Sign in"
+                "Sign Up"
               )}
             </button>
           </form>
 
           {/* Footer */}
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Already have an account?{" "}
-              <Link to="/login" className="link link-primary">
-                Sign in
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-gray-600 mt-6">
+            Already have an account?{" "}
+            <Link to="/login" className="text-yellow-500 font-medium">
+              Log In
+            </Link>
+          </p>
         </div>
       </div>
-
-       <AuthImagePattern
-        title={"Welcome to our platform!"}
-        subtitle={
-          "Sign up to access our platform and start using our services."
-        }
-      />
-
     </div>
-  )
-}
+  );
+};
 
-export default SignupPage
+export default SignupPage;

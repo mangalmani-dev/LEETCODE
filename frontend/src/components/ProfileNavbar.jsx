@@ -1,25 +1,23 @@
-// components/ProfileHeader.jsx
-import { useProfileStore } from "../store/useProfileStore";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useProfileStore } from "../store/useProfileStore";
 
 export default function ProfileHeader() {
-  const { profile, loading } = useProfileStore();
+  const { profile, loading, fetchProfile } = useProfileStore();
+
+  useEffect(() => {
+    if (!profile) fetchProfile();
+  }, [profile, fetchProfile]);
 
   if (loading || !profile) return null;
 
-  const { user } = profile;
-
-  const strike = "1 day";
-  const rank = "#2";
-  const successRate = "90%";
-
+  const { user, stats } = profile;
   return (
     <div className="fixed top-0 left-0 w-screen z-50 shadow-lg">
       <div className="relative bg-gradient-to-r from-black via-teal-900 to-cyan-700 p-8 flex flex-col md:flex-row items-center gap-6">
 
         {/* 🔥 TOP-RIGHT BUTTONS */}
         <div className="absolute top-4 right-6 flex gap-4">
-
           {/* Home */}
           <Link
             to="/home"
@@ -34,9 +32,6 @@ export default function ProfileHeader() {
           >
             ⬅ Home
           </Link>
-
-         
-
         </div>
 
         {/* Avatar */}
@@ -52,7 +47,9 @@ export default function ProfileHeader() {
         <div className="flex-1 text-white">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold">{user.name || "Anonymous"}</h1>
-            <span className="px-3 py-1 bg-pink-500 rounded-full text-sm font-semibold">{user.role}</span>
+            <span className="px-3 py-1 bg-pink-500 rounded-full text-sm font-semibold">
+              {user.role}
+            </span>
           </div>
 
           <p className="text-gray-200 mt-1">
@@ -62,16 +59,15 @@ export default function ProfileHeader() {
           {/* Key Stats */}
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="bg-black/30 px-4 py-2 rounded-xl flex items-center gap-2">
-              <span>🔥</span> <span>Strike: {strike}</span>
+              <span>🔥</span> <span>Strike: {stats.strike}</span>
             </div>
             <div className="bg-black/30 px-4 py-2 rounded-xl flex items-center gap-2">
-              <span>🏆</span> <span>Rank: {rank}</span>
+              <span>🏆</span> <span>Rank: {stats.rank}</span>
             </div>
             <div className="bg-black/30 px-4 py-2 rounded-xl flex items-center gap-2">
-              <span>🎯</span> <span>Success Rate: {successRate}</span>
+              <span>🎯</span> <span>Success Rate: {stats.successRate}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>

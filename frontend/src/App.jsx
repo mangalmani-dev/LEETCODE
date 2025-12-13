@@ -15,6 +15,7 @@ import AdminRoute from "./components/AdminRoute.jsx";
 
 import Navbar from "./components/Navbar.jsx";
 import ProfilePage from "./page/ProfilePage.jsx";
+import Pricing from "./page/PricingPage.jsx";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -84,6 +85,8 @@ function App() {
             element={authUser ? <AddProblem /> : <Navigate to="/login" replace />}
           />
         </Route>
+
+              <Route path="/pricing" element={<Pricing />} />
 
         {/* Fallback for 404 */}
         <Route path="*" element={<Navigate to="/" replace />} />
