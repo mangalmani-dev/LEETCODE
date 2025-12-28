@@ -6,11 +6,15 @@ import { useActions } from "../store/useAction.js";
 import { usePlaylistStore } from "../store/usePlaylistStore.js";
 import { CreatePlaylistModel } from "../components/CreatePlaylistModel.jsx";
 import AddToPlaylist from "./AddToPlaylist.jsx";
+import { useProblemStore } from "../store/useProblemStore";
 
 const ProblemTable = ({ problems }) => {
-
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editProblem, setEditProblem] = useState(null);
+
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
@@ -19,6 +23,8 @@ const ProblemTable = ({ problems }) => {
   const { isDeletingProblem, onDeleteProblem } = useActions();
   const { createPlaylist } = usePlaylistStore();
   const { authUser } = useAuthStore();
+  const { updateProblem, isUpdatingProblem } = useProblemStore();
+
   const [selectedProblemId, setSelectedProblemId] = useState(null);
 
   const handleCreatePlaylist = async (data) => {
@@ -52,9 +58,9 @@ const ProblemTable = ({ problems }) => {
   }, [filteredProblems, currentPage]);
 
   const handleDelete = (id) => {
-    console.log("Deleting: ", id);
     onDeleteProblem(id);
   };
+
   const handleAddToPlaylist = (problemId) => {
     setSelectedProblemId(problemId);
     setIsAddToPlaylistModalOpen(true);
@@ -109,7 +115,7 @@ const ProblemTable = ({ problems }) => {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="table table-zebra table-lg bg-base-200 text-base-content">
+        <table className="table table-zebra table-lg bg-base-200">
           <thead className="bg-base-300">
             <tr>
               <th>Solved</th>
@@ -121,9 +127,9 @@ const ProblemTable = ({ problems }) => {
           </thead>
 
           <tbody>
-            {paginatedProblems.length > 0 ? (
+            {paginatedProblems.length ? (
               paginatedProblems.map((problem) => {
-                const id = problem.id || problem._id; // FIXED
+                const id = problem.id || problem._id;
                 const isSolved = problem.solvedBy?.some(
                   (u) => u.userId === authUser?.id
                 );
@@ -131,7 +137,12 @@ const ProblemTable = ({ problems }) => {
                 return (
                   <tr key={id}>
                     <td>
-                      <input type="checkbox" checked={isSolved} readOnly className="checkbox checkbox-sm" />
+                      <input
+                        type="checkbox"
+                        checked={isSolved}
+                        readOnly
+                        className="checkbox checkbox-sm"
+                      />
                     </td>
 
                     <td>
@@ -143,7 +154,7 @@ const ProblemTable = ({ problems }) => {
                     <td>
                       <div className="flex flex-wrap gap-1">
                         {(problem.tags || []).map((tag, i) => (
-                          <span key={i} className="badge badge-outline badge-warning text-xs font-bold">
+                          <span key={i} className="badge badge-warning badge-outline text-xs">
                             {tag}
                           </span>
                         ))}
@@ -151,40 +162,47 @@ const ProblemTable = ({ problems }) => {
                     </td>
 
                     <td>
-                      <span className={`badge text-xs text-white ${problem.difficulty === "EASY" ? "badge-success" :
-                          problem.difficulty === "MEDIUM" ? "badge-warning" :
-                            "badge-error"
-                        }`}>
+                      <span className={`badge text-white ${
+                        problem.difficulty === "EASY"
+                          ? "badge-success"
+                          : problem.difficulty === "MEDIUM"
+                          ? "badge-warning"
+                          : "badge-error"
+                      }`}>
                         {problem.difficulty}
                       </span>
                     </td>
 
                     <td>
                       <div className="flex gap-2">
-
                         {authUser?.role === "ADMIN" && (
                           <>
                             <button
-                              onClick={() => handleDelete(id)}
                               className="btn btn-sm btn-error"
+                              onClick={() => handleDelete(id)}
+                              disabled={isDeletingProblem}
                             >
                               <TrashIcon className="w-4 h-4 text-white" />
                             </button>
 
-                            <button className="btn btn-sm btn-warning">
+                            <button
+                              className="btn btn-sm btn-warning"
+                              onClick={() => {
+                                setEditProblem({ ...problem });
+                                setIsEditModalOpen(true);
+                              }}
+                            >
                               <PencilIcon className="w-4 h-4 text-white" />
                             </button>
                           </>
                         )}
 
                         <button
-                          className="btn btn-sm btn-outline flex gap-2"
+                          className="btn btn-sm btn-outline"
                           onClick={() => handleAddToPlaylist(id)}
                         >
                           <Bookmark className="w-4 h-4" />
-                          Save to Playlist
                         </button>
-
                       </div>
                     </td>
                   </tr>
@@ -203,7 +221,8 @@ const ProblemTable = ({ problems }) => {
 
       {/* Pagination */}
       <div className="flex justify-center mt-6 gap-2">
-        <button className="btn btn-sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+        <button className="btn btn-sm" disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}>
           Prev
         </button>
 
@@ -211,12 +230,78 @@ const ProblemTable = ({ problems }) => {
           {currentPage} / {totalPages}
         </span>
 
-        <button className="btn btn-sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+        <button className="btn btn-sm" disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}>
           Next
         </button>
       </div>
 
-      {/* Playlist Modal */}
+      {/* Edit Modal */}
+      {isEditModalOpen && editProblem && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Edit Problem</h3>
+
+            <input
+              className="input input-bordered w-full mt-3"
+              value={editProblem.title}
+              onChange={(e) =>
+                setEditProblem({ ...editProblem, title: e.target.value })
+              }
+            />
+
+            <textarea
+              className="textarea textarea-bordered w-full mt-3"
+              value={editProblem.description}
+              onChange={(e) =>
+                setEditProblem({ ...editProblem, description: e.target.value })
+              }
+            />
+
+            <select
+              className="select select-bordered w-full mt-3"
+              value={editProblem.difficulty}
+              onChange={(e) =>
+                setEditProblem({ ...editProblem, difficulty: e.target.value })
+              }
+            >
+              <option>EASY</option>
+              <option>MEDIUM</option>
+              <option>HARD</option>
+            </select>
+
+            <input
+              className="input input-bordered w-full mt-3"
+              value={(editProblem.tags || []).join(",")}
+              onChange={(e) =>
+                setEditProblem({
+                  ...editProblem,
+                  tags: e.target.value.split(",").map(t => t.trim()),
+                })
+              }
+            />
+
+            <div className="modal-action">
+              <button
+                className="btn btn-primary"
+                disabled={isUpdatingProblem}
+                onClick={async () => {
+                  await updateProblem(editProblem.id, editProblem);
+                  setIsEditModalOpen(false);
+                }}
+              >
+                {isUpdatingProblem ? "Updating..." : "Update"}
+              </button>
+
+              <button className="btn" onClick={() => setIsEditModalOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Playlist Modals */}
       <CreatePlaylistModel
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -228,7 +313,6 @@ const ProblemTable = ({ problems }) => {
         onClose={() => setIsAddToPlaylistModalOpen(false)}
         problemId={selectedProblemId}
       />
-
     </div>
   );
 };
