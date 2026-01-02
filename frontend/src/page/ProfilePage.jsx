@@ -19,9 +19,9 @@ export default function ProfilePage() {
   const { user, stats } = profile;
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen" >
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-yellow-100 overflow-hidden"></div>
+ <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-800 transition-colors duration-300"></div>
 
       {/* Foreground Content */}
       <div className="relative max-w-5xl mx-auto p-6">

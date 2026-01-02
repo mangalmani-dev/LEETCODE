@@ -27,6 +27,7 @@ import { getLanguageId } from "../lib/lang.js";
 
 import SubmissionResults from "../components/Submission.jsx";
 import SubmissionsList from "../components/SubmissionList.jsx";
+import Discussion from "../components/Discussion.jsx";
 
 const ProblemPage = () => {
   const { id } = useParams();
@@ -41,6 +42,7 @@ const ProblemPage = () => {
     getSubmissionCountForProblem,
     submissionCount,
   } = useSubmissionStore();
+   
 
   // States
   const [code, setCode] = useState("");
@@ -216,8 +218,9 @@ const [selectedLanguage, setSelectedLanguage] = useState(
       case "submissions":
         return <SubmissionsList submissions={submissions} isLoading={isSubmissionsLoading} />;
 
-      case "discussion":
-        return <div className="p-4 text-center text-base-content/70">No discussions yet</div>;
+   case "discussion":
+  return <Discussion problemId={problem.id} />;
+
 
       case "hints":
         return (
@@ -255,8 +258,28 @@ const [selectedLanguage, setSelectedLanguage] = useState(
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-base-300 to-base-200 max-w-7xl mx-auto w-full">
-      {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} numberOfPieces={300} gravity={0.2} />}
 
+      {showConfetti && (
+  <Confetti
+    width={windowSize.width}
+    height={windowSize.height}
+    numberOfPieces={300}
+    gravity={0.3} // slightly stronger gravity
+    initialVelocityX={10} // push pieces leftwards
+    initialVelocityY={-10} // push pieces upwards
+    recycle={false} // stop after 1 burst
+    run={showConfetti}
+    // Positioning bottom-right
+    style={{
+      position: "fixed",
+      bottom: 0,
+      right: 0,
+      pointerEvents: "none",
+    }}
+  />
+)}
+
+   
       {/* NAVBAR */}
       <nav className="navbar bg-base-100 shadow-lg px-4">
         <div className="flex-1 gap-2">

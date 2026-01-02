@@ -25,22 +25,24 @@ enum Difficulty {
   MEDIUM
   HARD
 }
-
 model User { 
   id             String          @id @default(uuid())
   name           String?
   email          String          @unique
   image          String?
   role           UserRole        @default(USER)
-   password      String      
+  password       String?         // make it optional for OAuth users
+  providerId     String?         // store Google user ID
+  authProvider   String?         // e.g., "GOOGLE"
+  emailVerified  Boolean         @default(false)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
   problems       Problem[]      
   submission     Submission[]
   problemSolved  ProblemSolved[]
-  playlists Playlist[]
-
+  playlists      Playlist[]
+  comments       Comment[]
 }
 
 model Problem {
@@ -65,6 +67,7 @@ model Problem {
   submission        Submission[]
   solvedBy          ProblemSolved[]
   problemPlaylists  ProblemInPlaylist[]
+   comments Comment[] 
 }
 
 model Submission {
@@ -150,4 +153,19 @@ model ProblemInPlaylist{
   problem Problem @relation(fields: [problemId],references: [id],onDelete: Cascade)
 
   @@unique([playListId,problemId])
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  problemId  String
+  userId     String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // relations
+  problem    Problem  @relation(fields: [problemId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([problemId])
 }

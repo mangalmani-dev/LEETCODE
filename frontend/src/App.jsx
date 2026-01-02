@@ -4,6 +4,8 @@ import { useAuthStore } from "./store/useAuthStore.js";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 
+
+
 import LandingPage from "./page/LandingPage.jsx";
 import HomePage from "./page/HomePage.jsx";
 import LoginPage from "./page/LoginPage.jsx";
@@ -17,9 +19,13 @@ import Navbar from "./components/Navbar.jsx";
 import ProfilePage from "./page/ProfilePage.jsx";
 import Pricing from "./page/PricingPage.jsx";
 
+
+
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const location = useLocation();
+
+
 
   useEffect(() => {
     checkAuth();
@@ -37,13 +43,17 @@ function App() {
     );
   }
 
+
   return (
     <div>
       <Toaster />
 
+     
+
       {/* Navbar Visible Only When User Logged In */}
       {!hideNavbar && <Navbar />}
 
+    
       <Routes>
         {/* Public Landing Page */}
         <Route path="/" element={<LandingPage />} />

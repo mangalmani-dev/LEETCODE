@@ -363,7 +363,6 @@ const sampleStringProblem = {
     // Write your code here
   }
   
-  // Add readline for dynamic input handling
   const readline = require('readline');
   const rl = readline.createInterface({
     input: process.stdin,
@@ -371,32 +370,23 @@ const sampleStringProblem = {
     terminal: false
   });
   
-  // Process input line
   rl.on('line', (line) => {
-    // Call solution with the input string
     const result = isPalindrome(line);
-    
-    // Output the result
     console.log(result ? "true" : "false");
     rl.close();
   });`,
     PYTHON: `class Solution:
-      def isPalindrome(self, s: str) -> bool:
-          # Write your code here
-          pass
-  
-  # Input parsing
-  if __name__ == "__main__":
-      import sys
-      # Read the input string
-      s = sys.stdin.readline().strip()
-      
-      # Call solution
-      sol = Solution()
-      result = sol.isPalindrome(s)
-      
-      # Output result
-      print(str(result).lower())  # Convert True/False to lowercase true/false`,
+    def isPalindrome(self, s: str) -> bool:
+        # Write your code here
+        pass
+
+
+if __name__ == "__main__":
+    import sys
+    s = sys.stdin.readline().strip()
+    sol = Solution()
+    result = sol.isPalindrome(s)
+    print(str(result).lower())`,
     JAVA: `import java.util.Scanner;
 
 public class Main {
@@ -419,66 +409,42 @@ public class Main {
 `,
   },
   referenceSolutions: {
-    JAVASCRIPT: `/**
-   * @param {string} s
-   * @return {boolean}
-   */
-  function isPalindrome(s) {
-    // Convert to lowercase and remove non-alphanumeric characters
+    JAVASCRIPT: `function isPalindrome(s) {
     s = s.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    // Check if it's a palindrome
-    let left = 0;
-    let right = s.length - 1;
-    
+    let left = 0, right = s.length - 1;
     while (left < right) {
-      if (s[left] !== s[right]) {
-        return false;
-      }
+      if (s[left] !== s[right]) return false;
       left++;
       right--;
     }
-    
     return true;
-  }
-  
-  // Add readline for dynamic input handling
-  const readline = require('readline');
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-  });
-  
-  // Process input line
-  rl.on('line', (line) => {
-    // Call solution with the input string
-    const result = isPalindrome(line);
-    
-    // Output the result
-    console.log(result ? "true" : "false");
-    rl.close();
-  });`,
+}
+
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+});
+
+rl.on('line', (line) => {
+  const result = isPalindrome(line);
+  console.log(result ? "true" : "false");
+  rl.close();
+});`,
     PYTHON: `class Solution:
-      def isPalindrome(self, s: str) -> bool:
-          # Convert to lowercase and keep only alphanumeric characters
-          filtered_chars = [c.lower() for c in s if c.isalnum()]
-          
-          # Check if it's a palindrome
-          return filtered_chars == filtered_chars[::-1]
-  
-  # Input parsing
-  if __name__ == "__main__":
-      import sys
-      # Read the input string
-      s = sys.stdin.readline().strip()
-      
-      # Call solution
-      sol = Solution()
-      result = sol.isPalindrome(s)
-      
-      # Output result
-      print(str(result).lower())  # Convert True/False to lowercase true/false`,
+    def isPalindrome(self, s: str) -> bool:
+        # Convert to lowercase and keep only alphanumeric characters
+        filtered_chars = [c.lower() for c in s if c.isalnum()]
+        return filtered_chars == filtered_chars[::-1]
+
+
+if __name__ == "__main__":
+    import sys
+    s = sys.stdin.readline().strip()
+    sol = Solution()
+    result = sol.isPalindrome(s)
+    print(str(result).lower())`,
     JAVA: `import java.util.Scanner;
 
 public class Main {
@@ -489,20 +455,17 @@ public class Main {
     public static boolean isPalindrome(String s) {
         s = preprocess(s);
         int left = 0, right = s.length() - 1;
-
         while (left < right) {
             if (s.charAt(left) != s.charAt(right)) return false;
             left++;
             right--;
         }
-
         return true;
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
-
         boolean result = isPalindrome(input);
         System.out.println(result ? "true" : "false");
     }
@@ -510,6 +473,7 @@ public class Main {
 `,
   },
 };
+
 
 
 

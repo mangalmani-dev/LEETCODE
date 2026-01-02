@@ -2,19 +2,19 @@ import { Check } from "lucide-react";
 
 export default function Pricing() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-slate-900 min-h-screen transition-colors duration-300">
 
       {/* TOP BANNER */}
-      <div className="bg-[#FFC400] text-black text-center py-2 font-medium text-sm">
+      <div className="bg-yellow-400 text-black text-center py-2 font-medium text-sm">
         Codemani is in Beta! Join now for lifetime access to new problems, sheets & premium features.
       </div>
 
       {/* MAIN SECTION */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-center text-5xl font-extrabold text-black">
+        <h1 className="text-center text-5xl font-extrabold text-black dark:text-white transition-colors duration-300">
           Unlock Your Coding Potential
         </h1>
-        <p className="text-center text-gray-600 mt-3 text-lg">
+        <p className="text-center text-gray-600 dark:text-gray-300 mt-3 text-lg transition-colors duration-300">
           Choose a plan that fits your goals. Get lifetime access to Codemani resources with no recurring fees.
         </p>
 
@@ -42,7 +42,7 @@ export default function Pricing() {
             price="₹1999"
             label="one-time payment + GST"
             buttonText="Unlock Pro"
-            buttonStyle="bg-[#FFC400] text-black font-semibold"
+            buttonStyle="bg-yellow-400 text-black font-semibold"
             features={[
               "500+ coding problems",
               "Premium sheets and challenges",
@@ -74,7 +74,7 @@ export default function Pricing() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#111111] text-white py-16 mt-12">
+      <footer className="bg-gray-900 dark:bg-slate-800 text-white py-16 mt-12 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10">
 
           <div>
@@ -108,9 +108,9 @@ export default function Pricing() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="px-3 py-2 w-full rounded-l-md text-black"
+                className="px-3 py-2 w-full rounded-l-md text-black dark:text-white bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600"
               />
-              <button className="bg-[#FFC400] px-4 rounded-r-md text-black font-semibold">
+              <button className="bg-yellow-400 px-4 rounded-r-md text-black font-semibold">
                 Subscribe
               </button>
             </div>
@@ -118,35 +118,31 @@ export default function Pricing() {
 
         </div>
 
-        <p className="text-center text-gray-500 mt-10 text-sm">
+        <p className="text-center text-gray-500 dark:text-gray-400 mt-10 text-sm">
           © 2025 Codemani. All rights reserved.
         </p>
       </footer>
-
     </div>
   );
 }
 
+// ---------------- PLAN CARD ----------------
 function PlanCard({ title, price, label, buttonText, buttonStyle, features }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 hover:shadow-xl transition">
-      <h3 className="text-xl font-bold">{title}</h3>
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-md p-8 hover:shadow-xl transition-all duration-300">
+      <h3 className="text-xl font-bold text-black dark:text-white">{title}</h3>
 
-      <p className="text-5xl font-extrabold mt-4">
-        {price}
-      </p>
-      {label && <p className="text-gray-500 text-sm mt-1">{label}</p>}
+      <p className="text-5xl font-extrabold mt-4 text-black dark:text-white">{price}</p>
+      {label && <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{label}</p>}
 
-      <button
-        className={`w-full mt-6 py-3 rounded-xl ${buttonStyle}`}
-      >
+      <button className={`w-full mt-6 py-3 rounded-xl ${buttonStyle}`}>
         {buttonText}
       </button>
 
-      <ul className="mt-8 space-y-3 text-gray-700">
+      <ul className="mt-8 space-y-3 text-gray-700 dark:text-gray-300">
         {features.map((f, i) => (
           <li key={i} className="flex items-center gap-3">
-            <Check size={18} className="text-green-600" /> {f}
+            <Check size={18} className="text-green-600 dark:text-green-400" /> {f}
           </li>
         ))}
       </ul>

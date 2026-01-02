@@ -11,7 +11,6 @@ import { useProblemStore } from "../store/useProblemStore";
 const ProblemTable = ({ problems }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProblem, setEditProblem] = useState(null);
 
@@ -26,10 +25,6 @@ const ProblemTable = ({ problems }) => {
   const { updateProblem, isUpdatingProblem } = useProblemStore();
 
   const [selectedProblemId, setSelectedProblemId] = useState(null);
-
-  const handleCreatePlaylist = async (data) => {
-    await createPlaylist(data);
-  };
 
   const difficulties = ["EASY", "MEDIUM", "HARD"];
 
@@ -57,41 +52,28 @@ const ProblemTable = ({ problems }) => {
     );
   }, [filteredProblems, currentPage]);
 
-  const handleDelete = (id) => {
-    onDeleteProblem(id);
-  };
-
+  const handleDelete = (id) => onDeleteProblem(id);
   const handleAddToPlaylist = (problemId) => {
     setSelectedProblemId(problemId);
     setIsAddToPlaylistModalOpen(true);
   };
+  const handleCreatePlaylist = async (data) => await createPlaylist(data);
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-28">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Problems</h2>
-
-        <button
-          className="btn btn-primary gap-2"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus className="w-4 h-4" />
-          Create Playlist
-        </button>
-      </div>
+    <div className="w-full max-w-6xl mx-auto mt-10 relative">
 
       {/* Filters */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
         <input
           type="text"
           placeholder="Search by title"
-          className="input input-bordered w-full md:w-1/3 bg-base-200"
+          className="input input-bordered w-full md:w-1/3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="select select-bordered bg-base-200"
+          className="select select-bordered bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700"
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
         >
@@ -102,7 +84,7 @@ const ProblemTable = ({ problems }) => {
         </select>
 
         <select
-          className="select select-bordered bg-base-200"
+          className="select select-bordered bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700"
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
         >
@@ -111,12 +93,19 @@ const ProblemTable = ({ problems }) => {
             <option key={tag}>{tag}</option>
           ))}
         </select>
+
+        <button
+          className="btn btn-primary gap-2"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
+          <Plus className="w-4 h-4" /> Create Playlist
+        </button>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="table table-zebra table-lg bg-base-200">
-          <thead className="bg-base-300">
+        <table className="table table-zebra table-lg bg-white dark:bg-slate-900">
+          <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100">
             <tr>
               <th>Solved</th>
               <th>Title</th>
@@ -135,7 +124,7 @@ const ProblemTable = ({ problems }) => {
                 );
 
                 return (
-                  <tr key={id}>
+                  <tr key={id} className="hover:bg-slate-100 dark:hover:bg-slate-800">
                     <td>
                       <input
                         type="checkbox"
@@ -146,7 +135,10 @@ const ProblemTable = ({ problems }) => {
                     </td>
 
                     <td>
-                      <Link to={`/problem/${id}`} className="font-semibold hover:underline">
+                      <Link
+                        to={`/problem/${id}`}
+                        className="font-semibold hover:underline text-slate-900 dark:text-slate-100"
+                      >
                         {problem.title}
                       </Link>
                     </td>
@@ -210,7 +202,7 @@ const ProblemTable = ({ problems }) => {
               })
             ) : (
               <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-500">
+                <td colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-400">
                   No problems found.
                 </td>
               </tr>
@@ -221,8 +213,11 @@ const ProblemTable = ({ problems }) => {
 
       {/* Pagination */}
       <div className="flex justify-center mt-6 gap-2">
-        <button className="btn btn-sm" disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}>
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
           Prev
         </button>
 
@@ -230,8 +225,11 @@ const ProblemTable = ({ problems }) => {
           {currentPage} / {totalPages}
         </span>
 
-        <button className="btn btn-sm" disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}>
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
           Next
         </button>
       </div>
@@ -239,11 +237,11 @@ const ProblemTable = ({ problems }) => {
       {/* Edit Modal */}
       {isEditModalOpen && editProblem && (
         <div className="modal modal-open">
-          <div className="modal-box">
+          <div className="modal-box bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
             <h3 className="font-bold text-lg">Edit Problem</h3>
 
             <input
-              className="input input-bordered w-full mt-3"
+              className="input input-bordered w-full mt-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               value={editProblem.title}
               onChange={(e) =>
                 setEditProblem({ ...editProblem, title: e.target.value })
@@ -251,7 +249,7 @@ const ProblemTable = ({ problems }) => {
             />
 
             <textarea
-              className="textarea textarea-bordered w-full mt-3"
+              className="textarea textarea-bordered w-full mt-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               value={editProblem.description}
               onChange={(e) =>
                 setEditProblem({ ...editProblem, description: e.target.value })
@@ -259,7 +257,7 @@ const ProblemTable = ({ problems }) => {
             />
 
             <select
-              className="select select-bordered w-full mt-3"
+              className="select select-bordered w-full mt-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               value={editProblem.difficulty}
               onChange={(e) =>
                 setEditProblem({ ...editProblem, difficulty: e.target.value })
@@ -271,12 +269,12 @@ const ProblemTable = ({ problems }) => {
             </select>
 
             <input
-              className="input input-bordered w-full mt-3"
+              className="input input-bordered w-full mt-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               value={(editProblem.tags || []).join(",")}
               onChange={(e) =>
                 setEditProblem({
                   ...editProblem,
-                  tags: e.target.value.split(",").map(t => t.trim()),
+                  tags: e.target.value.split(",").map((t) => t.trim()),
                 })
               }
             />

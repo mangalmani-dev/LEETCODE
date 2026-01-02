@@ -3,82 +3,82 @@ import { getJudge0LanguageId } from "../libs/judge0.lib.js";
 import { pollBatchResults } from "../libs/judge0.lib.js";
 import { submitBatch } from "../libs/judge0.lib.js";
 
-export const createProblem =async (req,res)=>{
-   const {
-      title,
-      description,
-      difficulty,
-      tags,
-      examples,
-      constraints,
-      hints,
-      editorial,
-      testCases,
-      codeSnippets,
-    referenceSolution,
-    } = req.body;
-
-    if(req.user.role!=="ADMIN"){
-        return res.status(403).json({error:"You are not allowed to create pproblem "})
-    }
-
-    try { 
-        for(const [language,solutionCode] of Object.entries(referenceSolution)){
-            const languageId=getJudge0LanguageId(language)
-            if(!languageId){
-                return res.status(400).json({error :`Langauge ${language} is not supported`})
-            }
-
-            // 
-            const submissions=testCases.map(({input,output})=>({
-                source_code:solutionCode,
-                language_id:languageId,
-                stdin:input,
-                expected_output:output
-            })
-        )
-      
-        const submitResults=await submitBatch(submissions)
-
-        const tokens=submitResults.map((res)=>res.token)
-        
-        const results=await pollBatchResults(tokens)
-        for(let i=0 ;i<results.length;i++){
-            const result=results[i];
-            console.log("result--------------", result)
-        
-        if(result.status.id !==3){
-            return res.status(400).json({error:`Testcases ${i+1} failed for the language ${language}`})
-        }
-    }
-
-    // save the data in db
-     const newProblem = await db.problem.create({
-  data: {
+export const createProblem = async (req, res) => {
+  const {
     title,
     description,
     difficulty,
     tags,
-    userId :req.user.id,
-    examples,
+    examples = {},
     constraints,
-    hints,
-    editorial,
-    testCases,
-    codeSnippets,
-    referenceSolution,
-  },
-});
+    hints = "",
+    editorial = "",
+    testCases = [],
+    codeSnippets = {},
+    referenceSolution = {}
+  } = req.body;
 
-return res.status(201).json(newProblem)
+  if(req.user.role !== "ADMIN") {
+    return res.status(403).json({ error: "You are not allowed to create problem" });
+  }
 
-}
-    } catch (error) {
-         console.error("error in creating problem",error)
-         return res.status(500).json({message:"Error in creating problem"})
+  try {
+    // Validate referenceSolution
+    for (const [language, solutionCode] of Object.entries(referenceSolution)) {
+      const languageId = getJudge0LanguageId(language);
+      if (!languageId) {
+        return res.status(400).json({ error: `Language ${language} is not supported` });
+      }
+
+      // Prepare submissions
+      const submissions = testCases.map(({ input, output }) => ({
+        source_code: solutionCode,
+        language_id: languageId,
+        stdin: input,
+        expected_output: output
+      }));
+
+      const submitResults = await submitBatch(submissions);
+      const tokens = submitResults.map((r) => r.token);
+      const results = await pollBatchResults(tokens);
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        console.log("result--------------", result);
+
+        if (result.status.id !== 3) {
+          return res.status(400).json({
+            error: `Testcase ${i + 1} failed for the language ${language}`
+          });
+        }
+      }
     }
 
-}
+    // Save in DB
+    const newProblem = await db.problem.create({
+      data: {
+        title,
+        description,
+        difficulty,
+        tags,
+        userId: req.user.id,
+        examples,
+        constraints,
+        hints,
+        editorial,
+        testCases,
+        codeSnippets,
+        referenceSolution
+      }
+    });
+
+    return res.status(201).json(newProblem);
+
+  } catch (error) {
+    console.error("error in creating problem", error);
+    return res.status(500).json({ message: "Error in creating problem" });
+  }
+};
 
 export const getAllProblems = async (req, res) => {
   try {
